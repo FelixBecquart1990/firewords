@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "users": {
+      ".indexOn": "lastGameDate",
+      ".read": true,
+      "$uid": {
+        ".write": true
+      }
+    },
+    "version": {
+      ".read": true,
+      ".write": false
+    }
+  }
+}
