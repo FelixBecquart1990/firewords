@@ -11,7 +11,22 @@
       <router-link v-if="!playing && !endGame"  to="/ranking" class="button-ranking" style="cursor: pointer;z-index:2;">
       </router-link>
     </transition>
+    <transition name="bounce">
+      <div v-if="!playing && !endGame && notYetAddedToHomescreen" @click="dialog = true" class="button-add" style="z-index:2;margin-top:8px">
+      </div>
+    </transition>
   </div>
+
+      <v-dialog v-model="dialog" max-width="290">
+      <v-card class="color-back">
+        <v-card-title class="headline" style="color:#fff">Add Firewords to your home screen and get a bonus of 25xp!</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary" flat="flat" @click.native="dialog = false">later...</v-btn>
+          <v-btn color="secondary" flat="flat" @click.native="dialog = false" @click="addToHomescreen()">Add</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </div>
 </template>
 
@@ -20,10 +35,34 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "SideNavigation",
+  data() {
+    return {
+      dialog: false
+    };
+  },
   computed: {
-    ...mapGetters(["user", "endGame", "playing"])
+    ...mapGetters(["user", "endGame", "playing"]),
+    notYetAddedToHomescreen() {
+      return this.$store.getters.addToHomescreen;
+    }
   },
   methods: {
+    addToHomescreen() {
+      let self = this;
+      if (this.notYetAddedToHomescreen) {
+        this.notYetAddedToHomescreen.prompt();
+        this.notYetAddedToHomescreen.userChoice.then(function(choiceResult) {
+          console.log(choiceResult.outcome);
+          if (choiceResult.outcome === "dismissed") {
+            console.log("User cancelled installation");
+          } else {
+            console.log("User accepted installation");
+            self.$store.dispatch("addToHomescreen");
+          }
+        });
+        this.$store.commit("SET_ADD_TO_HOMESCREEN", null);
+      }
+    },
     openModalProfile() {
       this.$store.commit("SET_MODAL_PROFILE", true);
     },
@@ -38,8 +77,8 @@ export default {
 <style scoped>
 .chips-profile {
   background: url("../../static/img/sprite-2.svg") no-repeat -275px -60px;
-	width: 19px;
-	height: 19px;
+  width: 19px;
+  height: 19px;
   position: relative;
   right: -40px;
   top: 0px;
@@ -56,6 +95,12 @@ export default {
   transition: linear 0.3s;
 }
 
+.button-add {
+  background: url("../../static/img/sprite-2.svg") no-repeat -24px -17px;
+	width: 47px;
+	height: 70px;
+  transition: linear 0.3s;
+}
 .button-profile:active,
 .button-ranking:active {
   transform: scale(1.1);

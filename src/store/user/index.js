@@ -15,7 +15,8 @@ export default {
       profile: { visited: true },
       notifications: false,
       language: "en-fr",
-      rewards: { battleMode: { unloked :false } }
+      rewards: { battleMode: { unloked :false } },
+      addedToHomescreen: false
     }
   },
   mutations: {

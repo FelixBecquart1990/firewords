@@ -11,7 +11,8 @@ export default {
     rocketPosition: 41,
     fireSize:1,
     fireTimer:null,
-    displayQuestionAndAnswers: false
+    displayQuestionAndAnswers: false,
+    addToHomescreen:null
   },
   mutations: {
     SET_VERSION(state, payload) {
@@ -43,9 +44,22 @@ export default {
     },
     SET_DISPLAY_QUESTION_AND_ANSWERS(state, payload) {
       state.displayQuestionAndAnswers = payload;
+    },
+    SET_ADD_TO_HOMESCREEN(state, payload) {
+      state.addToHomescreen = payload;
     }
   },
   actions: {
+    addToHomescreen({ commit, getters, state, dispatch }) {
+      //console.log("Update user's data");
+      commit("SET_SNACKBAR", "+25 xp");
+
+      let data = { addedToHomescreen: true, elo: getters.user.elo + 25 };
+      firebase
+        .database()
+        .ref("/users/" + getters.user.uid)
+        .update(data);
+    },
     checkLastVersion({ commit, getters }, payload) {
       firebase
         .database()
@@ -116,6 +130,9 @@ export default {
     },
     displayQuestionAndAnswers(state) {
       return state.displayQuestionAndAnswers;
+    },
+    addToHomescreen(state) {
+      return state.addToHomescreen;
     }
   }
 };
